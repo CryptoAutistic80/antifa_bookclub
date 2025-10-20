@@ -9,11 +9,6 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Only use basePath for production builds (GitHub Pages)
-  ...(process.env.NODE_ENV === 'production' && {
-    basePath: '/antifa_bookclub',
-    assetPrefix: '/antifa_bookclub',
-  }),
 };
 
 export default nextConfig;
