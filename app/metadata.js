@@ -1,13 +1,11 @@
 export const metadata = {
-  // Prefer clear, branded title
+  // Clean, concise title + description for embeds
   title: 'Anti-Fascist Book Club UK',
   description:
-    'Anti-Fascist Book Club UK — A hub for educational resources, both free and paid.',
+    'Antifa/anti-fascist reading lists and resources — free and paid.',
   icons: { icon: '/favicon.ico' },
   // If you set NEXT_PUBLIC_SITE_URL, absolute URLs are generated for social cards
-  metadataBase: process.env.NEXT_PUBLIC_SITE_URL
-    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
-    : undefined,
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://antifa.city'),
   viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
   themeColor: '#0a0a0a',
   openGraph: {
@@ -15,8 +13,7 @@ export const metadata = {
     locale: 'en_GB',
     title: 'Anti-Fascist Book Club UK',
     siteName: 'Anti-Fascist Book Club UK',
-    description:
-      'A hub for educational resources, both free and paid.',
+    description: 'Antifa/anti-fascist reading lists and resources — free and paid.',
     url: '/',
     images: [
       {
@@ -33,8 +30,7 @@ export const metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Anti-Fascist Book Club UK',
-    description:
-      'A hub for educational resources, both free and paid.',
+    description: 'Antifa/anti-fascist reading lists and resources — free and paid.',
     images: ['/SEO-image.png'],
     // site: '@your_handle',
     // creator: '@your_handle',
