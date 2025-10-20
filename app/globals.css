@@ -1,0 +1,147 @@
+/* Global styles migrated from Vite project */
+
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #0a0a0a;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+}
+
+.app {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  background: transparent;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* LogoDisplay styles (global) */
+.logo-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.logo-wrapper {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  background: transparent;
+}
+
+.logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(74, 158, 255, 0.4)) drop-shadow(0 0 40px rgba(255, 68, 68, 0.2));
+  animation: fade-in-animation 0.5s ease-in-out forwards;
+  background: transparent;
+  image-rendering: crisp-edges;
+  opacity: 1;
+}
+
+.logo.fade-out {
+  animation: fade-out-animation 0.5s ease-in-out forwards;
+}
+
+.logo.fade-in {
+  animation: fade-in-animation 0.5s ease-in-out forwards;
+}
+
+@keyframes fade-in-animation {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-out-animation {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+.logo-title {
+  font-size: 18px;
+  font-weight: 300;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  animation: fade-in-animation 0.5s ease-in-out forwards;
+}
+
+@media (max-width: 768px) {
+  .logo-wrapper {
+    width: 200px;
+    height: 200px;
+    background: transparent;
+  }
+
+  .logo-title {
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-wrapper {
+    width: 150px;
+    height: 150px;
+    background: transparent;
+  }
+
+  .logo-title {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+}
+
