@@ -198,8 +198,8 @@ const Background3D = () => {
         // Sphere that fully contains the rectangle (half-diagonal)
         const radius = Math.sqrt(halfW * halfW + halfH * halfH);
         lightningRef.current.logoRadius = radius * 1.04; // small margin
-      } catch (_) {
-        // ignore
+      } catch {
+        // ignore errors when computing logo radius
       }
     };
     updateLogoRadius();
@@ -468,8 +468,8 @@ const Background3D = () => {
           const radius = Math.sqrt(halfW * halfW + halfH * halfH);
           lightningRef.current.logoRadius = radius * 1.04;
         }
-      } catch (_) {
-        // ignore
+      } catch {
+        // ignore errors when computing logo radius
       }
     };
 

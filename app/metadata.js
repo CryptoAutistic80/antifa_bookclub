@@ -6,8 +6,6 @@ export const metadata = {
   icons: { icon: '/favicon.ico' },
   // If you set NEXT_PUBLIC_SITE_URL, absolute URLs are generated for social cards
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://antifa.city'),
-  viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
-  themeColor: '#0a0a0a',
   openGraph: {
     type: 'website',
     locale: 'en_GB',
@@ -66,4 +64,11 @@ export const metadata = {
     'library',
     'learning',
   ],
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#0a0a0a',
 };

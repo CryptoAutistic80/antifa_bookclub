@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 export default function AudioLoop() {
   const audioRef = useRef(null);
-  const [showPrompt, setShowPrompt] = useState(false);
+  const startedRef = useRef(false);
 
   useEffect(() => {
     const el = audioRef.current;
@@ -24,92 +24,96 @@ export default function AudioLoop() {
     try {
       el.setAttribute('playsinline', 'true');
       el.setAttribute('webkit-playsinline', 'true');
-    } catch (_) {}
+    } catch {
+      // Ignore attribute setting errors
+    }
     // Ensure metadata is ready on iOS before play attempts
     try {
       el.load();
-    } catch (_) {}
+    } catch {
+      // Ignore load errors
+    }
 
-    const events = ['pointerdown', 'touchend', 'click', 'keydown'];
+    const events = [
+      'pointerdown',
+      'pointerup',
+      'pointermove',
+      'touchstart',
+      'touchmove',
+      'touchend',
+      'mousedown',
+      'mouseup',
+      'mousemove',
+      'click',
+      'keydown',
+      'wheel',
+      'scroll',
+    ];
 
-    const cleanup = () => {
-      events.forEach((t) => document.removeEventListener(t, onInteract, true));
-    };
+    const listenerOptions = { capture: true, passive: true };
+    let listenersAttached = false;
 
-    const resume = async () => {
-      try {
-        el.muted = false;
-        await el.play();
-        setShowPrompt(false);
-        cleanup();
-      } catch (_) {
-        // stay in prompted state; user may need to try again
+    const tryStartPlayback = () => {
+      if (startedRef.current) return;
+      el.muted = false;
+      const maybePromise = el.play();
+      if (maybePromise && typeof maybePromise.then === 'function') {
+        maybePromise
+          .then(() => {
+            startedRef.current = true;
+            detachListeners();
+          })
+          .catch(() => {
+            // keep listeners active for the next gesture
+          });
+      } else {
+        startedRef.current = true;
+        detachListeners();
       }
     };
 
-    const onInteract = () => {
-      // Call play() directly in the user gesture handler for iOS/Android
-      void resume();
+    const handleUserInteraction = () => {
+      if (startedRef.current) return;
+      tryStartPlayback();
     };
 
-    const tryPlay = async () => {
-      try {
-        await el.play(); // may throw on mobile
-        setShowPrompt(false);
-      } catch (_) {
-        // Autoplay blocked — show prompt and listen for the first gesture
-        setShowPrompt(true);
-        events.forEach((t) =>
-          document.addEventListener(t, onInteract, { capture: true, once: true })
-        );
-      }
+    const attachListeners = () => {
+      if (listenersAttached) return;
+      events.forEach((event) => {
+        document.addEventListener(event, handleUserInteraction, listenerOptions);
+        window.addEventListener(event, handleUserInteraction, listenerOptions);
+      });
+      listenersAttached = true;
     };
 
-    void tryPlay();
+    const detachListeners = () => {
+      if (!listenersAttached) return;
+      events.forEach((event) => {
+        document.removeEventListener(event, handleUserInteraction, listenerOptions.capture);
+        window.removeEventListener(event, handleUserInteraction, listenerOptions.capture);
+      });
+      listenersAttached = false;
+    };
+
+    // Attempt autoplay immediately
+    tryStartPlayback();
+    if (!startedRef.current) {
+      attachListeners();
+    }
 
     return () => {
-      cleanup();
+      detachListeners();
     };
   }, []);
 
   return (
-    <>
-      <audio
-        ref={audioRef}
-        // src set in effect to support basePath/assetPrefix
-        autoPlay
-        loop
-        playsInline
-        style={{ display: 'none' }}
-      />
-      {showPrompt && (
-        <button
-          onClick={() => {
-            const el = audioRef.current;
-            if (!el) return;
-            el.muted = false;
-            el.play().then(() => setShowPrompt(false)).catch(() => {});
-          }}
-          aria-label="Enable sound (check silent mode)"
-          style={{
-            position: 'fixed',
-            bottom: 24,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 100,
-            padding: '10px 14px',
-            fontSize: 14,
-            color: '#0a0a0a',
-            background: '#ffffff',
-            border: 'none',
-            borderRadius: 8,
-            boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
-            cursor: 'pointer',
-          }}
-        >
-          Tap for sound
-        </button>
-      )}
-    </>
+    <audio
+      ref={audioRef}
+      // src set in effect to support basePath/assetPrefix
+      autoPlay
+      loop
+      playsInline
+      style={{ display: 'none' }}
+    />
   );
 }
