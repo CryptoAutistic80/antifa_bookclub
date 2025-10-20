@@ -221,7 +221,10 @@ const Background3D = () => {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      containerRef.current?.removeChild(renderer.domElement);
+      const container = containerRef.current;
+      if (container && renderer.domElement) {
+        container.removeChild(renderer.domElement);
+      }
       renderer.dispose();
     };
   }, []);

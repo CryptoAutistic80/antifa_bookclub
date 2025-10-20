@@ -5,9 +5,9 @@ const nextConfig = {
   reactStrictMode: true,
   // Not using next/image; keep images simple for static hosting
   images: { unoptimized: true },
-  // If deploying to a subpath (e.g. GitHub Pages repo):
-  // basePath: '/REPO_NAME',
-  // assetPrefix: '/REPO_NAME',
+  // Deploying to GitHub Pages subpath
+  basePath: '/antifa_bookclub',
+  assetPrefix: '/antifa_bookclub',
 };
 
 export default nextConfig;
