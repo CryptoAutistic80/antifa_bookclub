@@ -7,6 +7,7 @@ import logo2 from '../public/logo2.png';
 const LogoDisplay = () => {
   const [currentLogo, setCurrentLogo] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [subtitleIndex, setSubtitleIndex] = useState(0);
 
   const logos = [
     {
@@ -21,20 +22,29 @@ const LogoDisplay = () => {
     },
   ];
 
+  const subtitles = [
+    'Locating free and paid tomes for you',
+    "not just a book club, it's a movement",
+  ];
+
   useEffect(() => {
     const interval = setInterval(() => {
       setIsTransitioning(true);
       setTimeout(() => {
         setCurrentLogo((prev) => (prev + 1) % logos.length);
+        setSubtitleIndex((prev) => (prev + 1) % subtitles.length);
         setIsTransitioning(false);
       }, 500);
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [logos.length]);
+  }, [logos.length, subtitles.length]);
 
   return (
     <div className="logo-container">
+      <div className={`logo-subtitle ${isTransitioning ? 'fade-out' : 'fade-in'}`}>
+        {subtitles[subtitleIndex]}
+      </div>
       <div className="logo-wrapper">
         <img
           key={currentLogo}

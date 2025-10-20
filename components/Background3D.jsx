@@ -10,6 +10,14 @@ const Background3D = () => {
   const particlesRef = useRef([]);
   const booksRef = useRef([]);
   const orbitsRef = useRef([]);
+  const lightningRef = useRef({
+    group: null,
+    strikes: [],
+    lastStrikeAt: 0,
+    nextStrikeDelay: 0,
+    flashLight: null,
+    logoRadius: 1.1, // fallback exclusion radius around the centered logo (world units)
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -157,6 +165,191 @@ const Background3D = () => {
     pointLight2.position.set(-5, -5, 5);
     scene.add(pointLight2);
 
+    // Lightning setup
+    const lightningGroup = new THREE.Group();
+    scene.add(lightningGroup);
+    const flashLight = new THREE.PointLight(0x99ccff, 0, 20, 2.0);
+    flashLight.position.set(0, 0, 0);
+    scene.add(flashLight);
+    lightningRef.current.group = lightningGroup;
+    lightningRef.current.flashLight = flashLight;
+    lightningRef.current.lastStrikeAt = performance.now();
+    // Slightly slower default cadence
+    lightningRef.current.nextStrikeDelay = 400 + Math.random() * 1000; // 0.4-1.4s
+
+    // Compute an exclusion sphere radius from the on-screen logo size so strikes stop at its edge
+    const updateLogoRadius = () => {
+      try {
+        const el = document.querySelector('.logo-wrapper');
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const heightPx = rect.height || 0;
+        const widthPx = rect.width || 0;
+        if (!heightPx || !widthPx) return;
+
+        // Convert pixels at z=0 plane to world units based on camera
+        const worldHeight = 2 * camera.position.z * Math.tan((camera.fov * Math.PI) / 360);
+        const worldWidth = worldHeight * camera.aspect;
+        const unitsPerPixelY = worldHeight / window.innerHeight;
+        const unitsPerPixelX = worldWidth / window.innerWidth;
+
+        const halfH = (heightPx / 2) * unitsPerPixelY;
+        const halfW = (widthPx / 2) * unitsPerPixelX;
+        // Sphere that fully contains the rectangle (half-diagonal)
+        const radius = Math.sqrt(halfW * halfW + halfH * halfH);
+        lightningRef.current.logoRadius = radius * 1.04; // small margin
+      } catch (_) {
+        // ignore
+      }
+    };
+    updateLogoRadius();
+
+    // Utility to create a jagged lightning line between start and end
+    const createLightningLine = (start, end, segments = 28, sway = 0.6, jaggedness = 1.5) => {
+      const points = [];
+      const direction = new THREE.Vector3().subVectors(end, start);
+      const length = direction.length();
+      const normal = direction.clone().normalize();
+
+      // Create a perpendicular basis for random offsets
+      const arbitrary = Math.abs(normal.y) < 0.99 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
+      const perp1 = new THREE.Vector3().crossVectors(normal, arbitrary).normalize();
+      const perp2 = new THREE.Vector3().crossVectors(normal, perp1).normalize();
+
+      for (let i = 0; i <= segments; i++) {
+        const t = i / segments;
+        const basePoint = new THREE.Vector3().copy(start).addScaledVector(normal, t * length);
+
+        // Offset decreases towards the target to sharpen near impact
+        const falloff = Math.pow(1.0 - t, 2);
+        const r1 = (Math.random() - 0.5) * sway * falloff * jaggedness;
+        const r2 = (Math.random() - 0.5) * sway * falloff * jaggedness;
+        basePoint.addScaledVector(perp1, r1).addScaledVector(perp2, r2);
+        points.push(basePoint.x, basePoint.y, basePoint.z);
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(points), 3));
+      const material = new THREE.LineBasicMaterial({
+        color: 0x4a9eff, // match particle color
+        transparent: true,
+        opacity: 1.0,
+        depthWrite: false,
+        depthTest: false,
+        blending: THREE.AdditiveBlending,
+        linewidth: 3.2, // tiny bit thicker
+      });
+      const line = new THREE.Line(geometry, material);
+      line.renderOrder = 9999;
+      return line;
+    };
+
+    // Intersect the segment start->end with a sphere of radius R at origin; return point on surface
+    const segmentSphereClamp = (start, end, R) => {
+      const d = new THREE.Vector3().subVectors(end, start);
+      const a = d.dot(d);
+      const b = 2 * start.dot(d);
+      const c = start.dot(start) - R * R;
+      const disc = b * b - 4 * a * c;
+      if (disc < 0 || a === 0) return end.clone();
+      const tEnter = (-b - Math.sqrt(disc)) / (2 * a);
+      if (tEnter >= 0 && tEnter <= 1) {
+        return new THREE.Vector3().copy(start).addScaledVector(d, tEnter);
+      }
+      return end.clone();
+    };
+
+    const spawnLightningStrike = () => {
+      // Keep aim at center with tiny jitter for variation
+      const target = new THREE.Vector3(
+        (Math.random() - 0.5) * 0.2,
+        (Math.random() - 0.5) * 0.2,
+        (Math.random() - 0.5) * 0.2,
+      );
+      const radius = 6 + Math.random() * 6; // 6-12
+      // Spawn from any direction for full 3D coverage
+      const phi = Math.random() * Math.PI; // 0..pi (full sphere)
+      const theta = Math.random() * Math.PI * 2;
+      const start = new THREE.Vector3(
+        Math.cos(theta) * Math.sin(phi) * radius,
+        Math.cos(phi) * radius,
+        Math.sin(theta) * Math.sin(phi) * radius,
+      );
+
+      // Clamp main strike to stop at logo sphere edge
+      const clampedEnd = segmentSphereClamp(start, target, lightningRef.current.logoRadius || 1.1);
+      const main = createLightningLine(start, clampedEnd);
+      lightningGroup.add(main);
+
+      // Optional small branch near the end
+      let branch = null;
+      if (Math.random() < 0.6) {
+        // start branching along the main segment but remain outside the exclusion sphere
+        const tAlong = 0.6 + Math.random() * 0.25;
+        const branchStart = new THREE.Vector3().lerpVectors(start, clampedEnd, tAlong);
+        // bias branch direction away from origin to avoid entering the logo region
+        const away = branchStart.clone().normalize();
+        const rand = new THREE.Vector3(Math.random() - 0.5, Math.random() * 0.5, Math.random() - 0.5).normalize();
+        const branchDir = new THREE.Vector3().addVectors(away.multiplyScalar(0.7), rand.multiplyScalar(0.3)).normalize();
+        const branchEndRaw = new THREE.Vector3().copy(branchStart).addScaledVector(branchDir, 1.0 + Math.random() * 1.2);
+        // Ensure branch does not cross into the logo sphere
+        const branchEnd = segmentSphereClamp(branchStart, branchEndRaw, lightningRef.current.logoRadius || 1.1);
+        branch = createLightningLine(branchStart, branchEnd, 12, 0.4, 1.2);
+        lightningGroup.add(branch);
+      }
+
+      // Impact ring at termination point (glow)
+      const impactNormal = clampedEnd.length() > 1e-6 ? clampedEnd.clone().normalize() : new THREE.Vector3(0, 0, 1);
+      const R = lightningRef.current.logoRadius || 1.1;
+      const ringInner = Math.max(0.02, R * 0.06);
+      const ringOuter = Math.max(ringInner + 0.01, R * 0.10);
+      const ringGeo = new THREE.RingGeometry(ringInner, ringOuter, 48);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: 0x66aaff,
+        transparent: true,
+        opacity: 1.0,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        depthTest: false,
+        blending: THREE.AdditiveBlending,
+      });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.position.copy(clampedEnd);
+      // Orient ring so its normal points away from the logo center
+      ring.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), impactNormal);
+      ring.renderOrder = 10000;
+      ring.userData.isImpactRing = true;
+      // subtle initial pop
+      ring.scale.setScalar(0.9 + Math.random() * 0.2);
+      lightningGroup.add(ring);
+
+      // Kick flash light
+      flashLight.intensity = Math.min(10, flashLight.intensity + 5.5);
+      flashLight.distance = 14;
+
+      lightningRef.current.strikes.push({
+        meshes: [main, ...(branch ? [branch] : []), ring],
+        bornAt: performance.now(),
+        // Slightly longer life for a slower feel
+        life: 260 + Math.random() * 200, // ms
+      });
+
+      // Schedule next strike
+      lightningRef.current.lastStrikeAt = performance.now();
+      // Short delays between bursts, slightly slower cadence
+      lightningRef.current.nextStrikeDelay = 320 + Math.random() * 720; // 0.32-1.04s
+    };
+
+    const spawnLightningBurst = () => {
+      // Vary burst size for intensity; occasional big bursts
+      const roll = Math.random();
+      const count = roll < 0.12 ? 5 + Math.floor(Math.random() * 4) : 2 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < count; i++) {
+        // Slightly increased stagger for a slower perceived propagation
+        setTimeout(spawnLightningStrike, i * 20);
+      }
+    };
+
     // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
@@ -204,6 +397,51 @@ const Background3D = () => {
       camera.position.y = Math.cos(Date.now() * 0.00008) * 0.3;
       camera.lookAt(0, 0, 0);
 
+      // Lightning lifecycle and scheduling
+      const now = performance.now();
+      // Schedule new strike
+      if (now - lightningRef.current.lastStrikeAt > lightningRef.current.nextStrikeDelay) {
+        spawnLightningBurst();
+      }
+      // Update existing strikes (fade + cleanup)
+      const active = [];
+      for (const strike of lightningRef.current.strikes) {
+        const age = now - strike.bornAt;
+        const t = age / strike.life;
+        const fade = Math.max(0, 1.0 - t);
+        for (const m of strike.meshes) {
+          if (m.material && m.material.opacity !== undefined) {
+            m.material.opacity = fade;
+          }
+        }
+        // Animate impact ring scale for a brief luminous pulse
+        for (const m of strike.meshes) {
+          if (m.userData && m.userData.isImpactRing) {
+            const pulse = 1.0 + 0.25 * Math.sin(Math.min(1, t) * Math.PI);
+            m.scale.setScalar(pulse);
+          }
+        }
+        if (age < strike.life) {
+          active.push(strike);
+        } else {
+          // remove from scene and dispose
+          for (const m of strike.meshes) {
+            lightningRef.current.group.remove(m);
+            if (m.geometry) m.geometry.dispose();
+            if (m.material) m.material.dispose();
+          }
+        }
+      }
+      // Keep memory/perf bounded at high frequency
+      lightningRef.current.strikes = active.slice(-120);
+      // Flash light decay
+      if (lightningRef.current.flashLight.intensity > 0) {
+        lightningRef.current.flashLight.intensity *= 0.85;
+        if (lightningRef.current.flashLight.intensity < 0.02) {
+          lightningRef.current.flashLight.intensity = 0;
+        }
+      }
+
       renderer.render(scene, camera);
     };
 
@@ -216,6 +454,23 @@ const Background3D = () => {
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
+      // Recompute exclusion radius for the logo on resize
+      try {
+        const worldHeight = 2 * camera.position.z * Math.tan((camera.fov * Math.PI) / 360);
+        const worldWidth = worldHeight * camera.aspect;
+        const el = document.querySelector('.logo-wrapper');
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const unitsPerPixelY = worldHeight / height;
+          const unitsPerPixelX = worldWidth / width;
+          const halfH = (rect.height / 2) * unitsPerPixelY;
+          const halfW = (rect.width / 2) * unitsPerPixelX;
+          const radius = Math.sqrt(halfW * halfW + halfH * halfH);
+          lightningRef.current.logoRadius = radius * 1.04;
+        }
+      } catch (_) {
+        // ignore
+      }
     };
 
     window.addEventListener('resize', handleResize);
@@ -233,4 +488,3 @@ const Background3D = () => {
 };
 
 export default Background3D;
-
