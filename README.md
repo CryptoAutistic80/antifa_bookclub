@@ -37,11 +37,35 @@ pnpm run dev
 pnpm run build
 ```
 
-### Deploy (e.g., GitHub Pages)
+### Deploy to GitHub Pages
 
-1. Build to `out/` with `pnpm run build`
-2. Deploy the `out/` folder (see `GITHUB_PAGES_SETUP.md`)
-3. Enable Pages in repository settings
+If your site is hosted at `https://USERNAME.github.io/REPO`, set the base path first:
+
+1) Configure base path (once): edit `next.config.mjs` and set:
+
+```js
+// next.config.mjs
+export default {
+  output: 'export',
+  images: { unoptimized: true },
+  basePath: '/REPO',
+  assetPrefix: '/REPO',
+};
+```
+
+2) Pre-build the site locally:
+
+```bash
+pnpm install
+pnpm run build   # generates ./out
+```
+
+3) Publish `out/` to GitHub Pages (pick one):
+
+- Manual upload (quick): push just the `out/` folder as a repo and enable Pages
+- GitHub Actions (automated): use the workflow in `GITHUB_PAGES_SETUP.md`
+
+4) In the repo settings, enable Pages and select the published branch.
 
 ## 📁 Project Structure
 
@@ -160,6 +184,7 @@ Edit `app/globals.css`:
 - Check Pages settings in repository
 - Verify `out/` folder is published
 - If using a subpath (e.g., `/repo-name`), configure `basePath`/`assetPrefix` in `next.config.mjs`
+- If you see 404 on refresh, ensure the page exists in `out/` (this app is a single index route)
 
 ## 📝 License
 

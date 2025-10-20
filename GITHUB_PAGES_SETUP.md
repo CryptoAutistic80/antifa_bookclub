@@ -1,18 +1,32 @@
 # GitHub Pages Deployment Guide
 
 ## Overview
-This is a pre-compiled static Next.js/React/Three.js website ready for GitHub Pages deployment. All files in the `out/` folder are production-ready and require no build process on the server.
+This is a pre-compiled static Next.js/React/Three.js website ready for GitHub Pages deployment. All files in the `out/` folder are production-ready and require no build process on the server. Pre-build locally, then publish the `out/` directory.
 
 ## Deployment Steps
 
-### Option 1: Using GitHub Pages (Recommended)
+### Option 1: Manual pre-build and publish (simple)
 
 1. **Create a GitHub Repository**
    - Go to https://github.com/new
    - Create a new repository (e.g., `anti-fascist-3d-site`)
    - Choose "Public" for GitHub Pages to work
 
-2. **Build and upload the `out/` folder contents**
+2. **If deploying under a repo subpath, configure base path**
+
+If your Pages URL is `https://USERNAME.github.io/REPO`, edit `next.config.mjs`:
+
+```js
+// next.config.mjs
+export default {
+  output: 'export',
+  images: { unoptimized: true },
+  basePath: '/REPO',
+  assetPrefix: '/REPO',
+};
+```
+
+3. **Build and upload the `out/` folder contents**
   ```bash
   # Build static site
   pnpm install
@@ -28,17 +42,17 @@ This is a pre-compiled static Next.js/React/Three.js website ready for GitHub Pa
   git push -u origin main
   ```
 
-3. **Enable GitHub Pages**
+4. **Enable GitHub Pages**
    - Go to your repository Settings
    - Navigate to "Pages" section
   - Set "Source" to "Deploy from a branch"
   - Select "main" branch and "/root" folder
   - Save and wait for deployment (usually 1-2 minutes)
 
-4. **Access your site**
+5. **Access your site**
    - Your site will be available at: `https://YOUR_USERNAME.github.io/YOUR_REPO/`
 
-### Option 2: Using GitHub Actions (Automated)
+### Option 2: Using GitHub Actions (automated)
 
 Create `.github/workflows/deploy.yml` in your repository:
 
@@ -68,6 +82,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./out
+          # If using a custom domain, optionally add:
+          # cname: your.custom.domain
 ```
 
 ## File Structure
@@ -102,14 +118,14 @@ out/
 To modify the site:
 
 1. Edit components in `components/` or styles in `app/globals.css`
-2. Run `pnpm run build` to rebuild
+2. Run `pnpm run build` to pre-build
 3. The new `out/` folder will contain the updated files
 
 ### Key Files to Modify
 
-- `src/components/Background3D.jsx` - 3D scene configuration
-- `src/components/LogoDisplay.jsx` - Logo rotation logic
-- `src/components/LogoDisplay.css` - Logo styling and animations
+- `components/Background3D.jsx` - 3D scene configuration
+- `components/LogoDisplay.jsx` - Logo rotation logic
+- `app/globals.css` - Styling and animations
 
 ## Performance Notes
 
@@ -122,6 +138,7 @@ To modify the site:
 
 **Logos not showing?**
 - Ensure PNG files are in the `out/` folder
+ - If using a subpath, confirm `basePath` and `assetPrefix` match the repo name
 - Check browser console for 404 errors
 
 **3D background not rendering?**
