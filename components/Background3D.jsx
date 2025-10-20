@@ -12,7 +12,8 @@ const Background3D = () => {
   const orbitsRef = useRef([]);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
     // Scene setup
     const scene = new THREE.Scene();
@@ -31,7 +32,7 @@ const Background3D = () => {
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
-    containerRef.current.appendChild(renderer.domElement);
+    container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
     // Create particle system (knowledge streams)
@@ -221,7 +222,6 @@ const Background3D = () => {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      const container = containerRef.current;
       if (container && renderer.domElement) {
         container.removeChild(renderer.domElement);
       }

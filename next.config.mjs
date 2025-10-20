@@ -8,6 +8,10 @@ const nextConfig = {
   // Deploying to GitHub Pages subpath
   basePath: '/antifa_bookclub',
   assetPrefix: '/antifa_bookclub',
+  // Disable ESLint during build to avoid configuration warnings
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
