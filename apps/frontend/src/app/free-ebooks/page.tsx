@@ -1,12 +1,20 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 
-export const metadata = {
+type Ebook = {
+  title: string;
+  author: string;
+  description: string;
+  file: string;
+};
+
+export const metadata: Metadata = {
   title: 'Free Ebook Library | Anti-Fascist Book Club UK',
   description:
     'Download five cornerstone anti-authoritarian novels in EPUB format, curated by Singularity Shift Ltd for the Anti-Fascist Book Club UK.',
 };
 
-const ebooks = [
+const EBOOKS: Ebook[] = [
   {
     title: 'Animal Farm',
     author: 'George Orwell',
@@ -17,29 +25,25 @@ const ebooks = [
   {
     title: 'Nineteen Eighty-Four',
     author: 'George Orwell',
-    description:
-      'A stark warning about surveillance, propaganda, and state power that remains chillingly relevant.',
+    description: 'A stark warning about surveillance, propaganda, and state power that remains chillingly relevant.',
     file: 'Nineteen eighty-four - George Orwell.epub',
   },
   {
     title: 'We',
     author: 'Yevgeny Zamyatin',
-    description:
-      'The proto-dystopian classic that inspired Orwell and Huxley with its critique of engineered conformity.',
+    description: 'The proto-dystopian classic that inspired Orwell and Huxley with its critique of engineered conformity.',
     file: 'We - Yevgeny Zamyatin.epub',
   },
   {
     title: 'The Iron Heel',
     author: 'Jack London',
-    description:
-      'A revolutionary narrative exposing oligarchic control and the struggle for organised resistance.',
+    description: 'A revolutionary narrative exposing oligarchic control and the struggle for organised resistance.',
     file: 'The Iron Heel - Jack London.epub',
   },
   {
     title: 'Looking Backward 2000 to 1887',
     author: 'Edward Bellamy',
-    description:
-      'Bellamy imagines a cooperative future society, offering a hopeful contrast to more oppressive dystopias.',
+    description: 'Bellamy imagines a cooperative future society, offering a hopeful contrast to more oppressive dystopias.',
     file: 'Looking Backward 2000 to 1887 - Edward Bellamy.epub',
   },
 ];
@@ -51,13 +55,12 @@ export default function FreeEbooksPage() {
         <p className="free-ebooks__eyebrow">Free Downloads</p>
         <h1 className="free-ebooks__title">Free Ebook Library</h1>
         <p className="free-ebooks__lede">
-          Start a mini anti-fascist library at home. Each EPUB is DRM-free and ready to
-          sideload on your reader of choice.
+          Start a mini anti-fascist library at home. Each EPUB is DRM-free and ready to sideload on your reader of choice.
         </p>
       </div>
 
       <div className="free-ebooks__grid">
-        {ebooks.map((book) => {
+        {EBOOKS.map((book) => {
           const href = `/free-epub/${encodeURIComponent(book.file)}`;
           return (
             <article key={book.file} className="free-ebooks__card">
@@ -66,11 +69,7 @@ export default function FreeEbooksPage() {
                 <p className="free-ebooks__card-author">by {book.author}</p>
               </header>
               <p className="free-ebooks__card-copy">{book.description}</p>
-              <a
-                href={href}
-                download
-                className="free-ebooks__card-link"
-              >
+              <a href={href} download className="free-ebooks__card-link">
                 Download EPUB
               </a>
             </article>
