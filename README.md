@@ -1,229 +1,106 @@
-# Anti-Fascist 3D Experience
+# Anti-Fascist Book Club Workspace
 
-A stunning, immersive React/Three.js website featuring an animated 3D background symbolizing resistance through knowledge, with rotating logos that fade seamlessly between each other.
+A full-stack Nx monorepo that powers the Anti-Fascist Book Club experience. The workspace hosts a NestJS API, a Next.js
+frontend, and a growing catalog of shared libraries so both applications stay in sync.
 
-## 🎨 Visual Features
+## 🧭 Workspace layout
 
-### 3D Background
-- **Particle System**: 1000+ animated particles flowing through the scene in blue tones
-- **Orbiting Books**: Symbolic representations of knowledge rotating in multiple dimensions
-- **Geometric Orbits**: Rotating rings in blue, red, and white representing interconnected ideas
-- **Dynamic Lighting**: Multi-source lighting with blue and red accents for depth and atmosphere
-- **Smooth Camera Movement**: Gentle orbital camera motion for immersive viewing
-
-### Logo Display
-- **Centered Display**: Both logos positioned at the center of the screen
-- **Fade Transitions**: Smooth 0.5-second fade animations between logos
-- **4-Second Rotation**: Logos transition every 4 seconds
-- **Drop Shadow Effect**: Blue glow effect around logos for visual prominence
-- **Responsive Sizing**: Adapts from 300px on desktop to 150px on mobile
-
-## 🚀 Quick Start (Next.js Static Export)
-
-### Development
-
-```bash
-# Install dependencies
-pnpm install
-
-# Start Next.js dev server
-pnpm run dev
+```text
+apps/
+  backend/         # NestJS container build context (app sources live in apps/src)
+  frontend/        # Next.js application
+  frontend-e2e/    # Playwright smoke tests
+  src/             # Backend source tree mounted by webpack
+libs/
+  api-types/       # Shared DTO contracts and OpenAPI helpers
+  config/          # Runtime configuration parsing (Zod powered)
+  core/            # Cross-cutting utilities
 ```
 
-### Build (pre-rendered static site)
+Each project is tagged with `scope:*`, `domain:*`, and `layer:*` metadata so Nx can enforce module boundaries through ESLint.
+Use `pnpm exec nx graph` to visualize dependencies.
 
-```bash
-# Builds to `out/` via next.config.mjs (output: 'export')
-pnpm run build
-```
+## 🚀 Quick start
 
-### Deploy to GitHub Pages
-
-If your site is hosted at `https://USERNAME.github.io/REPO`, set the base path first:
-
-1) Configure base path (once): edit `next.config.mjs` and set:
-
-```js
-// next.config.mjs
-export default {
-  output: 'export',
-  images: { unoptimized: true },
-  basePath: '/REPO',
-  assetPrefix: '/REPO',
-};
-```
-
-2) Pre-build the site locally:
+Install dependencies once per clone:
 
 ```bash
 pnpm install
-pnpm run build   # generates ./out
 ```
 
-3) Publish `out/` to GitHub Pages (pick one):
-
-- Manual upload (quick): push just the `out/` folder as a repo and enable Pages
-- GitHub Actions (automated): use the workflow in `GITHUB_PAGES_SETUP.md`
-
-4) In the repo settings, enable Pages and select the published branch.
-
-
-## 🐳 Docker-based Development
-
-The workspace now ships with Docker images for both the NestJS backend and the Next.js frontend.
+Run the backend (NestJS) with file watching on port **3000**:
 
 ```bash
-# Build both images and launch the stack
-pnpm exec nx run frontend:docker-up
+pnpm exec nx serve backend
 ```
 
-The compose file publishes the frontend on port **3000** and the backend on host port **3001** (container port 3000) to avoid a collision with Next.js. Override the defaults by exporting `FRONTEND_PORT` or `BACKEND_PORT_HOST` before running the command. API requests inside the containers target `http://backend:3000/api` via `NEXT_PUBLIC_API_URL`.
+Run the frontend (Next.js) with Hot Module Reloading on port **3000** (ensure the backend is available on
+`NEXT_PUBLIC_API_URL` before logging in):
 
-For iterative work outside Docker, rely on Nx watch targets instead of container volume mounts:
-
-- `pnpm exec nx serve backend --watch` starts the Nest API with live recompilation on port 3000.
-- `pnpm exec nx run frontend:next:dev` serves the Next.js app with hot reload on port 3000.
-
-If you keep these dev servers running, stop the Docker stack or change ports to avoid binding conflicts with the compose defaults.
-
-
-## 📁 Project Structure
-
-```
-anti_fascist_3d_site/
-├── app/
-│   ├── page.jsx                   # Home page (client component)
-│   ├── layout.jsx                 # Root layout + metadata
-│   └── globals.css                # Global styles (migrated)
-├── components/
-│   ├── Background3D.jsx           # Three.js 3D scene (client)
-│   └── LogoDisplay.jsx            # Logo rotation (client)
-├── public/
-│   ├── 94549151-6F8E-4D89-A1FA-7C3090A8C998.png
-│   ├── 1C15C370-AF41-4332-8E41-32944415171E.png
-│   ├── logo1.png
-│   └── logo2.png
-├── out/                           # Static build output (after `pnpm run build`)
-├── next.config.mjs                # Next.js static export config
-├── package.json                   # Dependencies and scripts
-└── GITHUB_PAGES_SETUP.md          # Deployment guide
+```bash
+pnpm exec nx serve frontend
 ```
 
-## 🛠️ Technology Stack
+Other helpful commands:
 
-- **Next.js 15** (App Router, static export)
-- **React 19** - UI framework
-- **Three.js 0.180.0** - 3D graphics library
-- **CSS** - Animations and styling
+- `pnpm exec nx lint <project>` – ESLint with module-boundary enforcement.
+- `pnpm exec nx test <project>` – Jest unit tests for backend or frontend packages.
+- `pnpm exec nx typecheck <project>` – TypeScript project references.
+- `pnpm exec nx build <project>` – Production builds (Next.js, NestJS bundle).
 
-## 🎯 Design Philosophy
+## 🔧 Environment configuration
 
-The website embodies the theme of **resistance through knowledge**:
+Three `.env` files keep configuration explicit:
 
-1. **Orbiting Books** - Represent the power of literature and education
-2. **Particle Flow** - Symbolize the spread of ideas and information
-3. **Blue Tones** - Convey trust, stability, and intellectual pursuit
-4. **Red Accents** - Represent resistance and revolutionary spirit
-5. **Geometric Patterns** - Show interconnected networks of resistance
+- `.env` (workspace root) – defaults consumed by Docker Compose and Nx tasks.
+- `apps/backend/.env` – NestJS service settings (`PORT`, Mongo connection, credentials).
+- `apps/frontend/.env.local` – Next.js runtime configuration (always prefix public values with `NEXT_PUBLIC_`).
 
-## 📱 Responsive Design
+Sample values live next to each file as `*.env.example`. Copy them when setting up a new environment:
 
-- **Desktop (1920px+)**: Full 300px logos with complete particle effects
-- **Tablet (768px-1919px)**: 200px logos with optimized particle count
-- **Mobile (320px-767px)**: 150px logos with streamlined effects
+```bash
+cp .env.example .env
+cp apps/backend/.env.example apps/backend/.env
+cp apps/frontend/.env.example apps/frontend/.env.local
+```
 
-## ⚡ Performance
+The backend uses Zod-based validation (see `libs/config`) so startup fails fast when variables are missing.
 
-- **Bundle Size**: ~680KB minified
-- **Gzipped Size**: ~183KB
-- **Target FPS**: 60 FPS on modern hardware
-- **Load Time**: <2 seconds on typical broadband
+## 🐳 Docker workflows
 
-## 🔧 Customization
+The repository includes Dockerfiles for both applications and a Compose stack to orchestrate them:
 
-### Modify 3D Background
-Edit `components/Background3D.jsx`:
-- Change particle count (line ~40)
-- Adjust particle colors (line ~65)
-- Modify orbit speeds and colors (lines ~130-145)
-- Adjust lighting intensity (lines ~149-157)
+```bash
+# Build and start both services with Docker Compose
+pnpm exec nx run backend:docker-up
+```
 
-### Modify Logo Rotation
-Edit `components/LogoDisplay.jsx`:
-- Change rotation interval (line ~20): `4000` milliseconds
-- Add/remove logos in the `logos` array (lines ~24-31)
-- Adjust fade duration (line ~22): `500` milliseconds
+This command runs `docker compose up backend frontend` using the images declared in `apps/backend/Dockerfile` and
+`apps/frontend/Dockerfile`. Environment overrides:
 
-### Modify Colors and Styling
-Edit `app/globals.css`:
-- Change drop shadow color (line ~12)
-- Adjust logo size (line ~10)
-- Modify animation timing
+- `FRONTEND_PORT` – host port that serves the Next.js container (default `3000`).
+- `BACKEND_PORT` – internal NestJS port (default `3000`).
+- `BACKEND_PORT_HOST` – host port published for the API (default `3001`).
+- `NEXT_PUBLIC_API_URL` – URL the frontend calls from inside or outside Docker (default `http://backend:3000/api`).
+- `MONGODB_URI` – connection string injected into the backend container.
 
-## 🌐 Browser Compatibility
+Stop the stack with `docker compose down`. For iterative development outside Docker, prefer the Nx `serve` targets above to
+avoid rebuild cycles.
 
-| Browser | Version | Status |
-|---------|---------|--------|
-| Chrome | 90+ | ✅ Full Support |
-| Firefox | 88+ | ✅ Full Support |
-| Safari | 14+ | ✅ Full Support |
-| Edge | 90+ | ✅ Full Support |
-| Mobile Chrome | Latest | ✅ Full Support |
-| Mobile Safari | 14+ | ✅ Full Support |
+## 🧱 Shared libraries
 
-## 📊 File Sizes
+- **`libs/api-types`** – shared DTO contracts and (future) OpenAPI schema helpers.
+- **`libs/config`** – Zod schemas and helpers that load environment variables for frontend and backend projects.
+- **`libs/core/utils`** – framework-agnostic utilities that can be consumed by either side of the stack.
 
-| File | Size | Gzipped |
-|------|------|---------|
-| index-*.js | 663 KB | 182.9 KB |
-| index-*.css | 2.0 KB | 0.76 KB |
-| Book Club Logo | 699 KB | - |
-| Resistance Symbol | 440 KB | - |
+When adding new features, create domain-specific libraries and tag them appropriately so they pass module-boundary checks.
 
-## 🚨 Troubleshooting
+## ✅ Quality gates
 
-### 3D Background Not Rendering
-- Ensure WebGL is enabled in your browser
-- Check browser console (F12) for errors
-- Try a different browser
-- Update your graphics drivers
-
-### Logos Not Displaying
-- Verify PNG files exist in the `dist/` folder
-- Check browser console for 404 errors
-- Ensure correct file paths in `LogoDisplay.jsx`
-
-### Poor Performance
-- Reduce particle count in `Background3D.jsx`
-- Disable some orbit rings
-- Lower browser graphics quality settings
-- Close other browser tabs
-
-### GitHub Pages Not Working
-- Ensure repository is public
-- Check Pages settings in repository
-- Verify `out/` folder is published
-- If using a subpath (e.g., `/repo-name`), configure `basePath`/`assetPrefix` in `next.config.mjs`
-- If you see 404 on refresh, ensure the page exists in `out/` (this app is a single index route)
-
-## 📝 License
-
-This project uses logos from the Anti-Fascist Book Club UK. Ensure proper attribution and licensing compliance when deploying.
+Module boundary violations are lint errors, and CI runs `nx affected -t lint,test,typecheck,build` on every pull request. Make
+sure local changes pass the same pipeline before opening a PR.
 
 ## 🤝 Contributing
 
-To contribute improvements:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📧 Support
-
-For issues, questions, or suggestions, please open an issue in the repository.
-
----
-
-**Built with ❤️ for resistance through knowledge**
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for coding standards (feature folder layout, NestJS layering, and tagging
+conventions).
