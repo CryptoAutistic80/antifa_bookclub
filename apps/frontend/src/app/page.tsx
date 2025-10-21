@@ -1,5 +1,4 @@
 import { AudioLoop, Background3D, LogoDisplay } from '@/features/landing';
-import { StorefrontSection } from '@/features/storefront';
 
 export default function Page() {
   return (
@@ -14,7 +13,6 @@ export default function Page() {
       <Background3D />
       <LogoDisplay />
       <AudioLoop />
-      <StorefrontSection />
     </div>
   );
 }

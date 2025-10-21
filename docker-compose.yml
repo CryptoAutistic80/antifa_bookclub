@@ -1,16 +1,28 @@
 version: '3.9'
 services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+
   backend:
     build:
       context: .
       dockerfile: apps/backend/Dockerfile
     environment:
       PORT: ${BACKEND_PORT:-3000}
-      MONGODB_URI: ${MONGODB_URI:-mongodb://localhost:27017/antifa-bookclub}
+      MONGODB_URI: mongodb://mongodb:27017/antifa-bookclub
     ports:
       - "${BACKEND_PORT_HOST:-3001}:3000"
+    depends_on:
+      - mongodb
     networks:
       - app-network
+
   frontend:
     build:
       context: .
@@ -19,11 +31,15 @@ services:
       - backend
     environment:
       PORT: 3000
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://backend:3000/api}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001/api}
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     networks:
       - app-network
+
+volumes:
+  mongodb_data:
+
 networks:
   app-network:
     driver: bridge

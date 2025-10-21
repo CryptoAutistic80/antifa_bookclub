@@ -19,12 +19,12 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat \
   && corepack enable
 
-COPY --from=base /app/dist/apps ./dist/apps
+COPY --from=base /app/apps/dist ./dist/apps
 COPY --from=base /app/dist/libs ./dist/libs
 COPY --from=base /app/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=base /app/dist/apps/package.json ./package.json
+COPY --from=base /app/apps/dist/package.json ./package.json
 
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod --no-frozen-lockfile
 
 EXPOSE 3000
 CMD ["node", "dist/apps/main.js"]

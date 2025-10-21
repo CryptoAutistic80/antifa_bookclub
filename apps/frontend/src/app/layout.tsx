@@ -13,6 +13,7 @@ type RootLayoutProps = PropsWithChildren<{ children: ReactNode }>;
 
 const navLinks = [
   { href: '/', label: 'Home' },
+  { href: '/store', label: 'Store' },
   { href: '/free-ebooks', label: 'Free Ebook Library' },
 ];
 

@@ -3,7 +3,7 @@ const { join } = require('node:path');
 
 module.exports = {
   output: {
-    path: join(__dirname, '../dist/apps'),
+    path: join(__dirname, 'dist'),
     ...(process.env.NODE_ENV !== 'production' && {
       devtoolModuleFilenameTemplate: '[absolute-resource-path]',
     }),
