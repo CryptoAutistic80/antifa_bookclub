@@ -198,6 +198,215 @@ body {
   color: rgba(255, 255, 255, 0.6);
 }
 
+.storefront {
+  max-width: 1100px;
+  margin: 120px auto 160px;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.storefront__header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.storefront__title {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: -0.01em;
+  text-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+}
+
+.storefront__description {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  max-width: 640px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.storefront__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 28px;
+}
+
+.storefront__grid-item {
+  list-style: none;
+}
+
+.storefront__state {
+  grid-column: 1 / -1;
+  padding: 32px;
+  border-radius: 16px;
+  background: rgba(18, 18, 18, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+  font-size: 18px;
+  text-align: center;
+}
+
+.storefront-card {
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 15, 15, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  min-height: 100%;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.storefront-card:hover,
+.storefront-card:focus-within {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.55);
+}
+
+.storefront-card__media {
+  position: relative;
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.12), rgba(255, 68, 68, 0.18));
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.storefront-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.storefront-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 12px;
+}
+
+.storefront-card__placeholder-label {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.storefront-card__body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.storefront-card__title {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+.storefront-card__description {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.storefront-card__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.storefront-card__price {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.storefront-card__tags {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+
+.storefront-card__tag {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(74, 158, 255, 0.18);
+  border: 1px solid rgba(74, 158, 255, 0.24);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.storefront-card--skeleton {
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.storefront-card--skeleton .storefront-card__body {
+  gap: 12px;
+}
+
+.storefront-card--skeleton .storefront-card__title,
+.storefront-card--skeleton .storefront-card__description,
+.storefront-card--skeleton .storefront-card__media {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  min-height: 24px;
+}
+
+.storefront-card--skeleton .storefront-card__media {
+  min-height: 220px;
+}
+
+.storefront__error-boundary {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.storefront__retry {
+  align-self: center;
+  padding: 12px 24px;
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.storefront__retry:hover,
+.storefront__retry:focus-visible {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.16);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 .free-ebooks__card-copy {
   margin: 0;
   font-size: 16px;

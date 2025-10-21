@@ -3,6 +3,8 @@ import Link from 'next/link';
 import Script from 'next/script';
 import type { PropsWithChildren, ReactNode } from 'react';
 
+import { Providers } from './providers';
+
 import './globals.css';
 
 export { metadata, viewport } from './metadata';
@@ -67,11 +69,13 @@ function gtag(){window.dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-E4WF4JENE8');`}
         </Script>
-        <div className="site-shell">
-          <Header />
-          <main className="site-main">{children}</main>
-          <Footer />
-        </div>
+        <Providers>
+          <div className="site-shell">
+            <Header />
+            <main className="site-main">{children}</main>
+            <Footer />
+          </div>
+        </Providers>
       </body>
     </html>
   );
