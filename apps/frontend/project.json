@@ -61,6 +61,13 @@
         "command": "docker compose up frontend backend"
       }
     },
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/frontend",
+        "command": "next start"
+      }
+    },
     "serve": {
       "executor": "nx:run-commands",
       "options": {

@@ -17,7 +17,7 @@ const getCurrencyFormatter = (currency: string) => {
           currency: normalized,
         }),
       );
-    } catch (error) {
+    } catch {
       numberFormatters.set(
         normalized,
         new Intl.NumberFormat('en-GB', {

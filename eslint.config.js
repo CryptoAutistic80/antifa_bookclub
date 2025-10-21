@@ -1,11 +1,17 @@
-import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import nxPlugin from '@nx/eslint-plugin'
 import tseslint from 'typescript-eslint'
+import { FlatCompat } from '@eslint/eslintrc'
+import { fileURLToPath } from 'node:url'
+import { dirname } from 'node:path'
 
-const jsRecommended = js.configs.recommended
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+const compat = new FlatCompat({ baseDirectory: __dirname })
+const nextConfigs = compat.extends('next/core-web-vitals')
 
 export default [
   {
@@ -18,28 +24,8 @@ export default [
       'node_modules',
     ],
   },
+  ...nextConfigs,
   ...tseslint.configs.recommended,
-  {
-    ...jsRecommended,
-    files: ['**/*.{js,jsx,cjs,mjs}'],
-    languageOptions: {
-      ...(jsRecommended.languageOptions ?? {}),
-      sourceType: 'module',
-      ecmaVersion: 2022,
-      globals: {
-        ...globals.browser,
-        ...globals.es2021,
-        process: 'readonly',
-      },
-      parserOptions: {
-        ...(jsRecommended.languageOptions?.parserOptions ?? {}),
-        ecmaFeatures: {
-          ...(jsRecommended.languageOptions?.parserOptions?.ecmaFeatures ?? {}),
-          jsx: true,
-        },
-      },
-    },
-  },
   {
     files: ['**/*.{ts,tsx,js,jsx}'],
     languageOptions: {
@@ -57,6 +43,12 @@ export default [
         projectService: true,
       },
     },
+    settings: {
+      next: {
+        rootDir: ['apps/frontend'],
+        pagesDir: [],
+      },
+    },
     plugins: {
       '@nx': nxPlugin,
       'react-hooks': reactHooks,
@@ -68,9 +60,22 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+      '@next/next/no-html-link-for-pages': 'off',
       'no-unused-vars': [
         'error',
-        { args: 'none', ignoreRestSiblings: true, varsIgnorePattern: '^[A-Z_]' },
+        {
+          args: 'none',
+          ignoreRestSiblings: true,
+          varsIgnorePattern: '^[A-Z_]',
+        },
+      ],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          args: 'none',
+          ignoreRestSiblings: true,
+          varsIgnorePattern: '^_',
+        },
       ],
       '@nx/enforce-module-boundaries': [
         'error',

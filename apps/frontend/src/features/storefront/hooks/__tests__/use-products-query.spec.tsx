@@ -38,9 +38,15 @@ const createQueryClient = () =>
     },
   });
 
-const createWrapper = (client: QueryClient) => ({ children }: { children: ReactNode }) => (
-  <QueryClientProvider client={client}>{children}</QueryClientProvider>
-);
+const createWrapper = (client: QueryClient) => {
+  const QueryWrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={client}>{children}</QueryClientProvider>
+  );
+
+  QueryWrapper.displayName = 'QueryWrapper';
+
+  return QueryWrapper;
+};
 
 describe('useProductsQuery', () => {
   beforeEach(() => {
