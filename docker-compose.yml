@@ -1,4 +1,3 @@
-version: '3.9'
 services:
   mongodb:
     image: mongo:latest
@@ -16,8 +15,9 @@ services:
     environment:
       PORT: ${BACKEND_PORT:-3000}
       MONGODB_URI: mongodb://mongodb:27017/antifa-bookclub
+      NODE_ENV: ${NODE_ENV:-development}
     ports:
-      - "${BACKEND_PORT_HOST:-3001}:3000"
+      - "${BACKEND_PORT_HOST:-4100}:3000"
     depends_on:
       - mongodb
     networks:
@@ -31,7 +31,7 @@ services:
       - backend
     environment:
       PORT: 3000
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001/api}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4100/api}
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     networks:

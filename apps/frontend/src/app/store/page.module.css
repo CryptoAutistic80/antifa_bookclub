@@ -1,27 +1,55 @@
-.store-page {
-  padding: 2rem 0;
+.storePage {
+  padding: 4rem 0;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
+  text-align: center;
 }
 
-.page-title {
-  font-size: 2.5rem;
+.comingSoonBanner {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16px;
+  padding: 4rem 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.comingSoonTitle {
+  font-size: 3.5rem;
   font-weight: bold;
-  text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   color: #0a0a0a;
+  background: linear-gradient(135deg, #dc3545, #fd7e14);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.page-description {
-  font-size: 1.2rem;
-  text-align: center;
-  margin-bottom: 3rem;
+.comingSoonText {
+  font-size: 1.3rem;
   color: #666;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  line-height: 1.6;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .comingSoonTitle {
+    font-size: 2.5rem;
+  }
+  
+  .comingSoonText {
+    font-size: 1.1rem;
+  }
+  
+  .comingSoonBanner {
+    padding: 3rem 1.5rem;
+  }
 }
