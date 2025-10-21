@@ -1,10 +1,21 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "npmScope": "antifa-bookclub",
+  "workspaceLayout": {
+    "appsDir": "apps",
+    "libsDir": "libs"
+  },
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "sharedGlobals": [],
-    "production": ["default"]
+    "production": [
+      "default",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/jest.config.[jt]s",
+      "!{projectRoot}/src/test-setup.[jt]s",
+      "!{projectRoot}/test-setup.[jt]s"
+    ]
   },
   "targetDefaults": {
     "build": {
@@ -20,6 +31,11 @@
     },
     "typecheck": {
       "inputs": ["default", "^default"]
+    },
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "defaultBase": "work",
@@ -46,11 +62,20 @@
       "options": {
         "targetName": "test"
       }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "eslint:lint"
+      }
     }
   ],
   "projects": {
     "frontend": "apps/frontend/project.json",
-    "frontend-e2e": "apps/frontend-e2e/project.json"
+    "frontend-e2e": "apps/frontend-e2e/project.json",
+    "api-types": "libs/api-types/project.json",
+    "core-utils": "libs/core/utils/project.json",
+    "config": "libs/config/project.json"
   },
   "generators": {
     "@nx/next": {
