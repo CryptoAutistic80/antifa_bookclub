@@ -3,16 +3,25 @@ import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import nxPlugin from '@nx/eslint-plugin'
+import tseslint from 'typescript-eslint'
 
 const jsRecommended = js.configs.recommended
 
 export default [
   {
-    ignores: ['dist', 'dist-ssr', '.next', 'out', 'node_modules'],
+    ignores: [
+      'dist',
+      'dist-ssr',
+      '.next',
+      '**/.next/**',
+      'out',
+      'node_modules',
+    ],
   },
+  ...tseslint.configs.recommended,
   {
     ...jsRecommended,
-    files: ['**/*.{js,jsx}'],
+    files: ['**/*.{js,jsx,cjs,mjs}'],
     languageOptions: {
       ...(jsRecommended.languageOptions ?? {}),
       sourceType: 'module',
@@ -30,20 +39,39 @@ export default [
         },
       },
     },
+  },
+  {
+    files: ['**/*.{ts,tsx,js,jsx}'],
+    languageOptions: {
+      sourceType: 'module',
+      ecmaVersion: 2022,
+      globals: {
+        ...globals.browser,
+        ...globals.es2021,
+        process: 'readonly',
+      },
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+        projectService: true,
+      },
+    },
     plugins: {
-      ...(jsRecommended.plugins ?? {}),
       '@nx': nxPlugin,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
     },
     rules: {
-      ...(jsRecommended.rules ?? {}),
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
       ],
-      'no-unused-vars': ['error', { args: 'none', ignoreRestSiblings: true, varsIgnorePattern: '^[A-Z_]' }],
+      'no-unused-vars': [
+        'error',
+        { args: 'none', ignoreRestSiblings: true, varsIgnorePattern: '^[A-Z_]' },
+      ],
       '@nx/enforce-module-boundaries': [
         'error',
         {
@@ -64,7 +92,11 @@ export default [
             },
             {
               sourceTag: 'domain:store',
-              onlyDependOnLibsWithTags: ['domain:store', 'domain:core', 'scope:shared'],
+              onlyDependOnLibsWithTags: [
+                'domain:store',
+                'domain:core',
+                'scope:shared',
+              ],
             },
             {
               sourceTag: 'domain:core',
@@ -72,15 +104,30 @@ export default [
             },
             {
               sourceTag: 'layer:controller',
-              onlyDependOnLibsWithTags: ['layer:controller', 'layer:service', 'layer:dto', 'layer:util'],
+              onlyDependOnLibsWithTags: [
+                'layer:controller',
+                'layer:service',
+                'layer:dto',
+                'layer:util',
+              ],
             },
             {
               sourceTag: 'layer:service',
-              onlyDependOnLibsWithTags: ['layer:service', 'layer:repository', 'layer:dto', 'layer:util'],
+              onlyDependOnLibsWithTags: [
+                'layer:service',
+                'layer:repository',
+                'layer:dto',
+                'layer:util',
+              ],
             },
             {
               sourceTag: 'layer:repository',
-              onlyDependOnLibsWithTags: ['layer:repository', 'layer:schema', 'layer:dto', 'layer:util'],
+              onlyDependOnLibsWithTags: [
+                'layer:repository',
+                'layer:schema',
+                'layer:dto',
+                'layer:util',
+              ],
             },
             {
               sourceTag: 'layer:schema',

@@ -1,0 +1,5 @@
+.next
+out
+dist
+dist-ssr
+node_modules

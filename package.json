@@ -74,6 +74,7 @@
     "jsonc-eslint-parser": "^2.1.0",
     "msw": "^2.11.6",
     "nx": "21.6.5",
+    "typescript-eslint": "^8.18.2",
     "prettier": "^2.6.2",
     "ts-jest": "^29.4.5",
     "ts-node": "10.9.1",
