@@ -8,11 +8,16 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
+dist/
 dist-ssr
-out
+out/
 .next
 *.local
+
+# Nx build artifacts
+*.tsbuildinfo
+.nx/cache
+.nx/workspace-data
 
 # Editor directories and files
 .vscode/*
@@ -24,3 +29,7 @@ out
 *.njsproj
 *.sln
 *.sw?
+
+# Project instructions
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md

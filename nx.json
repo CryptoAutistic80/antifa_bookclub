@@ -1,0 +1,30 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "npmScope": "antifa-bookclub",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "sharedGlobals": [],
+    "production": ["default"]
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["{projectRoot}/dist", "{projectRoot}/.next"]
+    },
+    "lint": {
+      "inputs": ["default", "{workspaceRoot}/eslint.config.js"]
+    },
+    "test": {
+      "inputs": ["default", "^default"],
+      "outputs": []
+    },
+    "typecheck": {
+      "inputs": ["default", "^default"]
+    }
+  },
+  "defaultBase": "main",
+  "plugins": [],
+  "projects": {
+    "site": "project.json"
+  }
+}
