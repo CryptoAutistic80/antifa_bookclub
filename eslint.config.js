@@ -63,6 +63,14 @@ export default [
               onlyDependOnLibsWithTags: ['scope:shared'],
             },
             {
+              sourceTag: 'domain:store',
+              onlyDependOnLibsWithTags: ['domain:store', 'domain:core', 'scope:shared'],
+            },
+            {
+              sourceTag: 'domain:core',
+              onlyDependOnLibsWithTags: ['domain:core', 'scope:shared'],
+            },
+            {
               sourceTag: 'layer:controller',
               onlyDependOnLibsWithTags: ['layer:controller', 'layer:service', 'layer:dto', 'layer:util'],
             },
