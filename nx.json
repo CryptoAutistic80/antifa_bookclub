@@ -61,18 +61,32 @@
       "plugin": "@nx/jest/plugin",
       "options": {
         "targetName": "test"
-      }
+      },
+      "exclude": ["apps-e2e/**/*"]
     },
     {
       "plugin": "@nx/eslint/plugin",
       "options": {
         "targetName": "eslint:lint"
       }
+    },
+    {
+      "plugin": "@nx/webpack/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "previewTargetName": "preview",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps",
+        "serveStaticTargetName": "serve-static"
+      }
     }
   ],
   "projects": {
     "frontend": "apps/frontend/project.json",
     "frontend-e2e": "apps/frontend-e2e/project.json",
+    "backend": "apps/project.json",
+    "backend-e2e": "apps-e2e/project.json",
     "api-types": "libs/api-types/project.json",
     "core-utils": "libs/core/utils/project.json",
     "config": "libs/config/project.json"

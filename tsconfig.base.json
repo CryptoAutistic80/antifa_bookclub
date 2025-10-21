@@ -19,8 +19,8 @@
     "forceConsistentCasingInFileNames": true,
     "paths": {
       "@antifa-bookclub/api-types": ["libs/api-types/src/index.ts"],
-      "@antifa-bookclub/core/utils": ["libs/core/utils/src/index.ts"],
-      "@antifa-bookclub/config": ["libs/config/src/index.ts"]
+      "@antifa-bookclub/config": ["libs/config/src/index.ts"],
+      "@antifa-bookclub/core/utils": ["libs/core/utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
