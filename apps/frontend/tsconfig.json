@@ -10,15 +10,34 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@antifa-bookclub/api-types": [
+        "../../libs/api-types/src/index.ts"
+      ],
+      "@antifa-bookclub/config": [
+        "../../libs/config/src/index.ts"
+      ],
+      "@antifa-bookclub/core/utils": [
+        "../../libs/core/utils/src/index.ts"
+      ]
     }
   },
   "include": [

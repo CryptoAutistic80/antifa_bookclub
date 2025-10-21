@@ -1,0 +1,29 @@
+version: '3.9'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    environment:
+      PORT: ${BACKEND_PORT:-3000}
+      MONGODB_URI: ${MONGODB_URI:-mongodb://localhost:27017/antifa-bookclub}
+    ports:
+      - "${BACKEND_PORT_HOST:-3001}:3000"
+    networks:
+      - app-network
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    depends_on:
+      - backend
+    environment:
+      PORT: 3000
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://backend:3000/api}
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge

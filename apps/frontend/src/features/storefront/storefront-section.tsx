@@ -7,7 +7,7 @@ import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import type { ProductList } from '@antifa-bookclub/api-types';
 
 import { MerchGrid } from './components/merch-grid';
-import { useProductsQuery } from './hooks/use-products-query';
+import { useProductsSuspenseQuery } from './hooks/use-products-query';
 
 type StorefrontSectionProps = {
   title?: string;
@@ -69,7 +69,7 @@ const DEFAULT_DESCRIPTION =
   'Latest literature and resources from independent publishers, co-ops, and comrades-in-print.';
 
 function StorefrontContent({ title, description }: Required<StorefrontSectionProps>) {
-  const { data } = useProductsQuery<ProductList>({ suspense: true });
+  const { data } = useProductsSuspenseQuery<ProductList>();
 
   return (
     <MerchGrid
