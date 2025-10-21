@@ -1,9 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Script from 'next/script';
+import type { PropsWithChildren, ReactNode } from 'react';
+
 import './globals.css';
 
 export { metadata, viewport } from './metadata';
+
+type RootLayoutProps = PropsWithChildren<{ children: ReactNode }>;
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -49,7 +53,7 @@ function Footer() {
   );
 }
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className="site-body">
