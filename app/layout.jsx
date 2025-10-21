@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import Script from 'next/script';
 import './globals.css';
 
 export { metadata, viewport } from './metadata';
@@ -52,6 +53,16 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="site-body">
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-E4WF4JENE8"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){window.dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-E4WF4JENE8');`}
+        </Script>
         <div className="site-shell">
           <Header />
           <main className="site-main">{children}</main>
