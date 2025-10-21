@@ -4,6 +4,7 @@ const config = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@antifa-bookclub/api-types$': '<rootDir>/../../libs/api-types/src/index.ts',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(png|jpe?g|gif|webp|svg)$': '<rootDir>/test/__mocks__/file-mock.ts',
   },
@@ -31,7 +32,7 @@ const config = {
       },
     ],
   },
-  transformIgnorePatterns: ['node_modules/(?!three/)'],
+  transformIgnorePatterns: ['node_modules/(?!.*(three|msw|@mswjs|until-async)/)'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
 };
 
