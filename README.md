@@ -67,6 +67,26 @@ pnpm run build   # generates ./out
 
 4) In the repo settings, enable Pages and select the published branch.
 
+
+## 🐳 Docker-based Development
+
+The workspace now ships with Docker images for both the NestJS backend and the Next.js frontend.
+
+```bash
+# Build both images and launch the stack
+pnpm exec nx run frontend:docker-up
+```
+
+The compose file publishes the frontend on port **3000** and the backend on host port **3001** (container port 3000) to avoid a collision with Next.js. Override the defaults by exporting `FRONTEND_PORT` or `BACKEND_PORT_HOST` before running the command. API requests inside the containers target `http://backend:3000/api` via `NEXT_PUBLIC_API_URL`.
+
+For iterative work outside Docker, rely on Nx watch targets instead of container volume mounts:
+
+- `pnpm exec nx serve backend --watch` starts the Nest API with live recompilation on port 3000.
+- `pnpm exec nx run frontend:next:dev` serves the Next.js app with hot reload on port 3000.
+
+If you keep these dev servers running, stop the Docker stack or change ports to avoid binding conflicts with the compose defaults.
+
+
 ## 📁 Project Structure
 
 ```

@@ -13,7 +13,6 @@ export function Providers({ children }: ProvidersProps) {
           queries: {
             refetchOnWindowFocus: false,
             retry: 2,
-            suspense: false,
           },
         },
       }),

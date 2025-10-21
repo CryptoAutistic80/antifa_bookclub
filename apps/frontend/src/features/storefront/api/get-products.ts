@@ -1,8 +1,14 @@
 import { productListSchema, type ProductList } from '@antifa-bookclub/api-types';
 
 const PRODUCTS_PATH = '/products';
+const isPrerenderPhase =
+  typeof window === 'undefined' && process.env.NEXT_PHASE === 'phase-production-build';
 
 export async function getProducts(): Promise<ProductList> {
+  if (isPrerenderPhase) {
+    return [];
+  }
+
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
   if (!baseUrl) {
