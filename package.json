@@ -7,7 +7,7 @@
     "nx": "nx",
     "dev": "nx run frontend:serve",
     "serve": "nx run frontend:serve",
-    "build": "nx run frontend:build",
+    "build": "node ./tools/scripts/root-build.cjs",
     "start": "nx run frontend:start",
     "test": "nx run frontend:test",
     "lint": "nx run frontend:lint"
